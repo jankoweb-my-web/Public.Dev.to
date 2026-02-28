@@ -27,22 +27,28 @@ jobs:
       - name: Get changed and deleted posts
         id: changed
         run: |
-          # Get changed/added files
+          # Get changed/added files (newline-separated to support paths with spaces)
           if git rev-parse HEAD~1 >/dev/null 2>&1; then
             FILES=$(git diff --name-only --diff-filter=AM HEAD~1 HEAD \
-              | grep '^posts/.*\.md$' \
-              | tr '\n' ' ')
+              | grep '^posts/.*\.md$')
             DELETED=$(git diff --name-only --diff-filter=D HEAD~1 HEAD \
-              | grep '^posts/.*\.md$' \
-              | tr '\n' ' ')
+              | grep '^posts/.*\.md$')
           else
             FILES=$(git show --name-only --pretty="" HEAD \
-              | grep '^posts/.*\.md$' \
-              | tr '\n' ' ')
+              | grep '^posts/.*\.md$')
             DELETED=""
           fi
-          echo "FILES=$FILES" >> $GITHUB_OUTPUT
-          echo "DELETED=$DELETED" >> $GITHUB_OUTPUT
+          # Use multiline format only when non-empty (plain KEY= for empty ensures != '' checks work correctly)
+          if [ -n "$FILES" ]; then
+            { echo "FILES<<EOF"; echo "$FILES"; echo "EOF"; } >> $GITHUB_OUTPUT
+          else
+            echo "FILES=" >> $GITHUB_OUTPUT
+          fi
+          if [ -n "$DELETED" ]; then
+            { echo "DELETED<<EOF"; echo "$DELETED"; echo "EOF"; } >> $GITHUB_OUTPUT
+          else
+            echo "DELETED=" >> $GITHUB_OUTPUT
+          fi
           echo "Changed files: $FILES"
           echo "Deleted files: $DELETED"
 
@@ -56,59 +62,7 @@ jobs:
         if: steps.changed.outputs.FILES != ''
         env:
           FILES: ${{ steps.changed.outputs.FILES }}
-        run: |
-          python - <<'PY'
-          import os, sys, re
-          files = os.environ.get('FILES','').strip()
-          out_dir = 'processed_posts'
-          if not files:
-              sys.exit(0)
-          os.makedirs(out_dir, exist_ok=True)
-          processed = []
-          for md in files.split():
-              if not os.path.exists(md):
-                  print('Skip missing:', md)
-                  continue
-              with open(md, 'r', encoding='utf-8') as f:
-                  s = f.read()
-
-              pattern = re.compile(r':\(\s*([^\s\)]+)(?:\s+lang=([^\)\s]+))?\s*\)')
-
-              def repl(m):
-                  rel = m.group(1)
-                  lang = m.group(2)
-                  base = os.path.dirname(md)
-                  p = rel if os.path.isabs(rel) else os.path.normpath(os.path.join(base, rel))
-                  if not os.path.exists(p):
-                      print('Included file not found:', p)
-                      return m.group(0)
-                  ext = os.path.splitext(p)[1].lower()
-                  if not lang:
-                      lang_map = {'.ps1':'powershell','.sh':'bash','.js':'javascript','.ts':'typescript',
-                            '.py':'python','.json':'json','.html':'html','.css':'css'}
-                      lang = lang_map.get(ext, 'text')
-                  with open(p,'r',encoding='utf-8') as inc:
-                      code = inc.read().rstrip()
-                  return f"```{lang}\n{code}\n```"
-
-              new = pattern.sub(repl, s)
-              relpath = os.path.relpath(md)
-              out_path = os.path.join(out_dir, relpath)
-              os.makedirs(os.path.dirname(out_path), exist_ok=True)
-              with open(out_path, 'w', encoding='utf-8') as f:
-                  f.write(new)
-              processed.append(out_path)
-              print('Wrote processed file:', out_path)
-
-          if processed:
-              gh_out = os.environ.get('GITHUB_OUTPUT')
-              if gh_out:
-                  with open(gh_out, 'a', encoding='utf-8') as out:
-                      # Output as newline-separated list for publish-devto action
-                      out.write('PROCESSED_FILES<<EOF\n')
-                      out.write('\n'.join(processed))
-                      out.write('\nEOF\n')
-          PY
+        run: python scripts/include_processor.py
 
       - name: Publish articles to dev.to
         if: steps.changed.outputs.FILES != ''
@@ -245,7 +199,7 @@ jobs:
               sys.exit(0)
           
           # For each deleted file, try to find its ID from git history
-          for md_file in deleted.split():
+          for md_file in deleted.splitlines():
               if not md_file:
                   continue
               print(f"Processing deleted file: {md_file}")
