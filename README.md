@@ -12,10 +12,17 @@
 ## Automatizace
 Workflow automaticky:
 - ✅ **Publikuje nové články** na DEV.to
-- ✅ **Zpracovává `:(path/file.ext)` syntaxi** - vkládá obsah souborů jako kódové bloky
+- ✅ **Zpracovává `:(path/file.ext)` syntaxi** - vkládá obsah souborů jako kódové bloky (viz [`scripts/include_processor.py`](scripts/include_processor.py))
 - ✅ **Aktualizuje články** když je změníte
 - ✅ **Zapisuje id, date, url** do front-matter po publikaci
 - ✅ **Odstraňuje články z DEV.to** když je smažete z repozitáře
+
+Skript `scripts/include_processor.py` lze spustit i lokálně:
+```bash
+python scripts/include_processor.py posts/muj-clanek/clanek.md
+```
+
+Více o vkládání kódu a alternativách (GitHub Gist, raw odkazy): viz [`GIST.md`](GIST.md).
 
 ## Ruční psaní
 Front-matter:
