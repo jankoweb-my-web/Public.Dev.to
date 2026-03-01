@@ -7,5 +7,5 @@ tags: 'test, devto, automation'
 Toto je ukazka kodu:
 
  ```
- :(kod.js)  
+ :(kod.js)
  ```
