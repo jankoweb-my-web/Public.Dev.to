@@ -30,7 +30,7 @@ Front-matter:
 ---
 title: "Nadpis"
 published: true
-tags: [tag1, tag2]
+tags: "tag1, tag2"
 ---
 ```
 - `title` je identifikátor, neměňte při updatu.

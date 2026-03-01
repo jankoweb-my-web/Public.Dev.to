@@ -126,7 +126,8 @@ $folderPath = Join-Path $dir $folderName
 $filePath = Join-Path $folderPath $fileName
 
 if (!(Test-Path $folderPath)) { New-Item -ItemType Directory -Path $folderPath | Out-Null }
-if (!(Test-Path $filePath)) { @('---','title: ""','published: false','tags:','---','') | Set-Content -Encoding utf8 $filePath }
+if (!(Test-Path $filePath)) { @('---','title: ""','published: false','tags: "tag1, tag2"','comment: kod se vlozit jako',' ```',
+' :(example.js lang=javascript)', ' ```','---','') | Set-Content -Encoding utf8 $filePath }
 
 $articleContent = $form.Tag.Content
 if ($articleContent) {

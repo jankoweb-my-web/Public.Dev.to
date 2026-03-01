@@ -8,7 +8,6 @@ Kód uložte jako samostatný soubor vedle článku a odkažte ho v Markdownu:
 
 ```
 :(example.js)
-:(snippets/query.sql lang=sql)
 ```
 
 Při publikaci na DEV.to workflow automaticky nahradí syntaxi obsahem souboru jako kódový blok.
