@@ -1,0 +1,6 @@
+// proti zavirani aplikaci python po spusteni vscode
+  // Zamezí obnovování starých terminálů po restartu VS Code
+  "terminal.integrated.enablePersistentSessions": false,
+
+  // Vypne automatické vkládání Ctrl+C při pokusu o znovupoužití terminálu
+  "debug.terminal.clearBeforeReusing": false,
