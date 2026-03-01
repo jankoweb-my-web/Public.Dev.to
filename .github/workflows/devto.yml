@@ -30,12 +30,12 @@ jobs:
           # Get changed/added files (newline-separated to support paths with spaces)
           if git rev-parse HEAD~1 >/dev/null 2>&1; then
             FILES=$(git diff --name-only --diff-filter=AM HEAD~1 HEAD \
-              | grep '^posts/.*\.md$')
+              | grep '^posts/.*\.md$' || true)
             DELETED=$(git diff --name-only --diff-filter=D HEAD~1 HEAD \
-              | grep '^posts/.*\.md$')
+              | grep '^posts/.*\.md$' || true)
           else
             FILES=$(git show --name-only --pretty="" HEAD \
-              | grep '^posts/.*\.md$')
+              | grep '^posts/.*\.md$' || true)
             DELETED=""
           fi
           # Use multiline format only when non-empty (plain KEY= for empty ensures != '' checks work correctly)
@@ -68,6 +68,7 @@ jobs:
         if: steps.changed.outputs.FILES != ''
         uses: sinedied/publish-devto@v2
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           devto_key: ${{ secrets.DEVTO_API_KEY }}
           files: ${{ steps.include.outputs.PROCESSED_FILES }}
           conventional_commits: false
