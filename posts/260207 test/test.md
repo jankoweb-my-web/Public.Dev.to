@@ -1,11 +1,9 @@
 ---
-title: 'Testovací článek: jak připravuji příspěvek pro DEV.to'
+title: Test Article for DEV.to Publishing
 published: true
-tags: 'devto, blogging, writing, productivity'
-id: 3240492
-date: '2026-02-07T21:26:46Z'
-slug: testovaci-clanek-jak-pripravuji-prispevek-pro-devto-bph
-url: https://dev.to/jankoweb/testovaci-clanek-jak-pripravuji-prispevek-pro-devto-bph
+tags: 'test, devto, automation'
+id: 3240314
+date: '2026-02-07T18:08:46Z'
 ---
 
 22:41
